@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from "react";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 //peguei essa splash de um projeto do react mesmo
 
@@ -9,7 +9,7 @@ export default function SplashScreen({ onFinish }) {
       if (onFinish) {
         onFinish();
       }
-    }, 1500);
+    }, 200);
 
     return () => clearTimeout(timer);
   }, [onFinish]);
@@ -26,21 +26,21 @@ export default function SplashScreen({ onFinish }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2563eb',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#2563eb",
+    alignItems: "center",
+    justifyContent: "center",
     padding: 24,
   },
   title: {
-    color: '#f8fafc',
+    color: "#f8fafc",
     fontSize: 32,
-    fontWeight: '700',
+    fontWeight: "700",
     marginBottom: 8,
   },
   subtitle: {
-    color: '#dbeafe',
+    color: "#dbeafe",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 20,
   },
   loader: {
