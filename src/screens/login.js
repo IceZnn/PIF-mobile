@@ -1,12 +1,14 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import typography from "../theme/typography";
+import colors from "../theme/colors";
 
 export default function LoginScreen({ onLogin, onSignup }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
       <View style={styles.placeholder}>
-        <Text>Campos de login</Text>
+        <Text style={typography.body}>Campos de login</Text>
       </View>
       <TouchableOpacity style={styles.button} onPress={onLogin}>
         <Text style={styles.buttonText}>Entrar</Text>
@@ -23,38 +25,37 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     justifyContent: "center",
-    backgroundColor: "#f8fafc",
+    backgroundColor: colors.background,
   },
   title: {
-    fontSize: 22,
-    fontWeight: "700",
+    ...typography.h2,
     marginBottom: 12,
   },
   placeholder: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.surface,
     padding: 16,
     borderRadius: 8,
     marginBottom: 16,
   },
   button: {
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.primary,
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
     marginBottom: 12,
   },
   buttonText: {
-    color: "#fff",
-    fontWeight: "600",
+    color: colors.onPrimary,
+    ...typography.button,
   },
   secondaryButton: {
-    backgroundColor: "#e2e8f0",
+    backgroundColor: colors.border,
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
   },
   secondaryButtonText: {
-    color: "#0f172a",
-    fontWeight: "600",
+    color: colors.text,
+    ...typography.button,
   },
 });

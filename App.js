@@ -6,6 +6,7 @@ import LoginScreen from "./src/screens/login";
 import CadastroUserScreen from "./src/screens/cadastro_user";
 import HomeScreen from "./src/screens/home";
 import TarefasScreen from "./src/screens/tarefas";
+import colors from "./src/theme/colors";
 
 export default function App() {
   const [screen, setScreen] = useState("splash");
@@ -61,6 +62,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0f172a",
+    backgroundColor: colors.text,
   },
 });

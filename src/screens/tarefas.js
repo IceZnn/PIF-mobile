@@ -6,6 +6,8 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
+import typography from "../theme/typography";
+import colors from "../theme/colors";
 
 export default function TarefasScreen({ onBack, onCreateTask }) {
   const data = [];
@@ -23,7 +25,7 @@ export default function TarefasScreen({ onBack, onCreateTask }) {
         keyExtractor={(item, idx) => String(idx)}
         ListEmptyComponent={() => (
           <View style={styles.placeholder}>
-            <Text>Nenhuma tarefa </Text>
+            <Text style={typography.body}>Nenhuma tarefa </Text>
           </View>
         )}
         renderItem={() => null}
@@ -39,7 +41,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    backgroundColor: "#f8fafc",
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: "row",
@@ -48,16 +50,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   title: {
-    fontSize: 22,
-    fontWeight: "700",
+    ...typography.h2,
   },
   backText: {
-    color: "#2563eb",
-    fontWeight: "600",
+    color: colors.primary,
+    ...typography.button,
   },
   placeholder: {
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: colors.surface,
     borderRadius: 8,
   },
   fab: {
@@ -67,9 +68,9 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
   },
-  fabText: { color: "#fff", fontSize: 24, fontWeight: "700" },
+  fabText: { ...typography.h2, color: colors.onPrimary },
 });

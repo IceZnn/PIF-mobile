@@ -1,5 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import typography from "../theme/typography";
+import colors from "../theme/colors";
 
 export default function HomeScreen({ onNewTask, onLogout }) {
   return (
@@ -26,15 +28,15 @@ export default function HomeScreen({ onNewTask, onLogout }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: colors.background,
     justifyContent: "center",
     padding: 24,
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 24,
-    shadowColor: "#000",
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -45,36 +47,34 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#0f172a",
+    ...typography.h2,
+    color: colors.text,
     marginBottom: 8,
   },
   description: {
-    fontSize: 15,
-    color: "#475569",
-    lineHeight: 22,
+    ...typography.body,
+    color: colors.textSecondary,
     marginBottom: 20,
   },
   button: {
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.primary,
     borderRadius: 10,
     paddingVertical: 12,
     alignItems: "center",
     marginBottom: 12,
   },
   buttonText: {
-    color: "#ffffff",
-    fontWeight: "600",
+    color: colors.onPrimary,
+    ...typography.button,
   },
   secondaryButton: {
-    backgroundColor: "#e2e8f0",
+    backgroundColor: colors.border,
     borderRadius: 10,
     paddingVertical: 12,
     alignItems: "center",
   },
   secondaryButtonText: {
-    color: "#0f172a",
-    fontWeight: "600",
+    color: colors.text,
+    ...typography.button,
   },
 });

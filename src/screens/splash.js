@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import typography from "../theme/typography";
+import colors from "../theme/colors";
 
 //peguei essa splash de um projeto do react mesmo
 
@@ -18,7 +20,7 @@ export default function SplashScreen({ onFinish }) {
     <View style={styles.container}>
       <Text style={styles.title}>Task App</Text>
       <Text style={styles.subtitle}>Organize sua vida de forma simples</Text>
-      <ActivityIndicator size="large" color="#f8fafc" style={styles.loader} />
+      <ActivityIndicator size="large" color={colors.background} style={styles.loader} />
     </View>
   );
 }
@@ -26,20 +28,19 @@ export default function SplashScreen({ onFinish }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
   },
   title: {
-    color: "#f8fafc",
-    fontSize: 32,
-    fontWeight: "700",
+    color: colors.background,
+    ...typography.h1,
     marginBottom: 8,
   },
   subtitle: {
-    color: "#dbeafe",
-    fontSize: 16,
+    color: colors.primaryLight,
+    ...typography.body,
     textAlign: "center",
     marginBottom: 20,
   },
