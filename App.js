@@ -5,7 +5,6 @@ import SplashScreen from "./src/screens/splash";
 import LoginScreen from "./src/screens/login";
 import CadastroUserScreen from "./src/screens/cadastro_user";
 import HomeScreen from "./src/screens/home";
-import TarefasScreen from "./src/screens/tarefas";
 import colors from "./src/theme/colors";
 
 export default function App() {
@@ -36,19 +35,11 @@ export default function App() {
 
     if (screen === "home") {
       return (
-        <HomeScreen
-          onNewTask={() => setScreen("tarefas")}
-          onLogout={() => setScreen("login")}
-        />
+        <HomeScreen onLogout={() => setScreen("login")} />
       );
     }
 
-    return (
-      <TarefasScreen
-        onBack={() => setScreen("home")}
-        onCreateTask={() => setScreen("home")}
-      />
-    );
+    return <LoginScreen onLogin={() => setScreen("home")} onSignup={() => setScreen("cadastro")} />;
   };
 
   return (

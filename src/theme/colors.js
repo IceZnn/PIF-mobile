@@ -5,6 +5,7 @@ const colors = {
   primaryLight: "#dbeafe",
   text: "#0f172a",
   textSecondary: "#475569",
+  error: "#b42318",
   border: "#e2e8f0",
   onPrimary: "#ffffff",
   shadow: "#000000",

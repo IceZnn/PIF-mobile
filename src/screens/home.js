@@ -3,20 +3,18 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import typography from "../theme/typography";
 import colors from "../theme/colors";
 
-export default function HomeScreen({ onNewTask, onLogout }) {
+export default function HomeScreen({ onLogout }) {
   return (
     <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.emoji}>✓</Text>
-        <Text style={styles.title}>Bem-vindo ao Task App</Text>
+      <View style={styles.header}>
+        <Text style={styles.logo}>SESI</Text>
+        <Text style={styles.headerTitle}>Sistema de Controle de Desperdício Alimentar</Text>
+      </View>
+      <View style={styles.content}>
+        <Text style={styles.title}>Tudo certo!</Text>
         <Text style={styles.description}>
-          Aqui começa sua lista de tarefas.
+          Seu acesso foi realizado com sucesso.
         </Text>
-
-        <TouchableOpacity style={styles.button} onPress={onNewTask}>
-          <Text style={styles.buttonText}>Nova tarefa</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity style={styles.secondaryButton} onPress={onLogout}>
           <Text style={styles.secondaryButtonText}>Sair</Text>
         </TouchableOpacity>
@@ -29,48 +27,50 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    justifyContent: "center",
-    padding: 24,
+    backgroundColor: colors.background,
   },
-  card: {
+  header: {
     backgroundColor: colors.surface,
-    borderRadius: 16,
+    borderBottomColor: colors.border,
+    borderBottomWidth: 1,
     padding: 24,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
   },
-  emoji: {
-    fontSize: 28,
+  logo: {
+    color: colors.primary,
+    fontSize: 26,
+    fontWeight: "800",
+    letterSpacing: 1,
     marginBottom: 8,
+  },
+  headerTitle: {
+    color: colors.text,
+    fontSize: 17,
+    fontWeight: "600",
+    lineHeight: 23,
+  },
+  content: {
+    padding: 24,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     ...typography.h2,
     color: colors.text,
     marginBottom: 8,
+    textAlign: "center",
   },
   description: {
     ...typography.body,
     color: colors.textSecondary,
     marginBottom: 20,
-  },
-  button: {
-    backgroundColor: colors.primary,
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  buttonText: {
-    color: colors.onPrimary,
-    ...typography.button,
+    textAlign: "center",
   },
   secondaryButton: {
     backgroundColor: colors.border,
-    borderRadius: 10,
+    borderRadius: 8,
     paddingVertical: 12,
+    paddingHorizontal: 32,
     alignItems: "center",
   },
   secondaryButtonText: {

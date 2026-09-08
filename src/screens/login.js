@@ -1,22 +1,78 @@
-import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import typography from "../theme/typography";
 import colors from "../theme/colors";
 
 export default function LoginScreen({ onLogin, onSignup }) {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+
+  const handleLogin = () => {
+    if (!email.trim() || !senha.trim()) {
+      setErro("Preencha seu email e sua senha.");
+      return;
+    }
+
+    setErro("");
+    onLogin({ email: email.trim(), senha });
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <View style={styles.placeholder}>
-        <Text style={typography.body}>Campos de login</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <View style={styles.brand}>
+        <Text style={styles.logo}>SESI</Text>
+        <Text style={styles.brandTitle}>
+          Sistema de Controle de Desperdício Alimentar
+        </Text>
       </View>
-      <TouchableOpacity style={styles.button} onPress={onLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.secondaryButton} onPress={onSignup}>
-        <Text style={styles.secondaryButtonText}>Criar conta</Text>
-      </TouchableOpacity>
-    </View>
+
+      <View style={styles.form}>
+        <Text style={styles.title}>Entrar</Text>
+        <Text style={styles.subtitle}>Acesse sua conta para continuar.</Text>
+
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Digite seu email"
+          placeholderTextColor={colors.textSecondary}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+
+        <Text style={styles.label}>Senha</Text>
+        <TextInput
+          style={styles.input}
+          value={senha}
+          onChangeText={setSenha}
+          placeholder="Digite sua senha"
+          placeholderTextColor={colors.textSecondary}
+          secureTextEntry
+        />
+
+        {erro ? <Text style={styles.error}>{erro}</Text> : null}
+
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>ENTRAR</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.secondaryButton} onPress={onSignup}>
+          <Text style={styles.secondaryButtonText}>Criar uma conta</Text>
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -27,35 +83,73 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: colors.background,
   },
+  brand: {
+    marginBottom: 28,
+  },
+  logo: {
+    color: colors.primary,
+    fontSize: 28,
+    fontWeight: "800",
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  brandTitle: {
+    color: colors.text,
+    fontSize: 18,
+    fontWeight: "600",
+    lineHeight: 24,
+    maxWidth: 320,
+  },
+  form: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 20,
+  },
   title: {
     ...typography.h2,
-    marginBottom: 12,
+    marginBottom: 6,
   },
-  placeholder: {
-    backgroundColor: colors.surface,
-    padding: 16,
+  subtitle: {
+    ...typography.body,
+    color: colors.textSecondary,
+    marginBottom: 20,
+  },
+  label: {
+    ...typography.button,
+    color: colors.text,
+    marginBottom: 6,
+  },
+  input: {
+    borderColor: colors.border,
+    borderWidth: 1,
     borderRadius: 8,
+    color: colors.text,
+    fontSize: 16,
     marginBottom: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  error: {
+    color: colors.error,
+    marginBottom: 12,
   },
   button: {
     backgroundColor: colors.primary,
-    paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
-    marginBottom: 12,
+    paddingVertical: 13,
+    marginTop: 4,
+    marginBottom: 14,
   },
   buttonText: {
     color: colors.onPrimary,
     ...typography.button,
   },
   secondaryButton: {
-    backgroundColor: colors.border,
-    paddingVertical: 12,
-    borderRadius: 8,
     alignItems: "center",
   },
   secondaryButtonText: {
-    color: colors.text,
+    color: colors.primary,
     ...typography.button,
   },
 });
