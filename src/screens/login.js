@@ -11,19 +11,19 @@ import {
 import typography from "../theme/typography";
 import colors from "../theme/colors";
 
-export default function LoginScreen({ onLogin, onSignup }) {
-  const [email, setEmail] = useState("");
+export default function LoginScreen({ onLogin, onSignup, externalError }) {
+  const [cpf, setCpf] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
 
   const handleLogin = () => {
-    if (!email.trim() || !senha.trim()) {
-      setErro("Preencha seu email e sua senha.");
+    if (!cpf.trim() || !senha.trim()) {
+      setErro("Preencha seu CPF e sua senha.");
       return;
     }
 
     setErro("");
-    onLogin({ email: email.trim(), senha });
+    onLogin({ cpf: cpf.trim(), senha });
   };
 
   return (
@@ -40,17 +40,16 @@ export default function LoginScreen({ onLogin, onSignup }) {
 
       <View style={styles.form}>
         <Text style={styles.title}>Entrar</Text>
-        <Text style={styles.subtitle}>Acesse sua conta para continuar.</Text>
+        <Text style={styles.subtitle}></Text>
 
-        <Text style={styles.label}>Email</Text>
+        <Text style={styles.label}>CPF</Text>
         <TextInput
           style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Digite seu email"
+          value={cpf}
+          onChangeText={setCpf}
+          placeholder="Digite seu CPF"
           placeholderTextColor={colors.textSecondary}
-          keyboardType="email-address"
-          autoCapitalize="none"
+          keyboardType="numeric"
         />
 
         <Text style={styles.label}>Senha</Text>
@@ -63,7 +62,9 @@ export default function LoginScreen({ onLogin, onSignup }) {
           secureTextEntry
         />
 
-        {erro ? <Text style={styles.error}>{erro}</Text> : null}
+        {erro || externalError ? (
+          <Text style={styles.error}>{erro || externalError}</Text>
+        ) : null}
 
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>ENTRAR</Text>

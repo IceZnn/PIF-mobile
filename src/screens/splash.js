@@ -19,8 +19,14 @@ export default function SplashScreen({ onFinish }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>SESI</Text>
-      <Text style={styles.subtitle}>Sistema de Controle de Desperdício Alimentar</Text>
-      <ActivityIndicator size="large" color={colors.background} style={styles.loader} />
+      <Text style={styles.subtitle}>
+        Sistema de Controle de Desperdício Alimentar
+      </Text>
+      <ActivityIndicator
+        size="large"
+        color={colors.background}
+        style={styles.loader}
+      />
     </View>
   );
 }

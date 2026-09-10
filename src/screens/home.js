@@ -8,7 +8,9 @@ export default function HomeScreen({ onLogout }) {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.logo}>SESI</Text>
-        <Text style={styles.headerTitle}>Sistema de Controle de Desperdício Alimentar</Text>
+        <Text style={styles.headerTitle}>
+          Sistema de Controle de Desperdício Alimentar
+        </Text>
       </View>
       <View style={styles.content}>
         <Text style={styles.title}>Tudo certo!</Text>
