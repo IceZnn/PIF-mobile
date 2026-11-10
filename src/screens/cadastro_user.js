@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -25,24 +26,41 @@ export default function CadastroUserScreen({
     escola: "",
   });
   const [erro, setErro] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [hideExternalError, setHideExternalError] = useState(false);
+
+  useEffect(() => {
+    setHideExternalError(false);
+  }, [externalError]);
 
   const updateField = (field, value) => {
     setForm((current) => ({ ...current, [field]: value }));
+    setErro("");
+    setHideExternalError(true);
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (Object.values(form).some((value) => !value.trim())) {
       setErro("Preencha todos os campos para criar sua conta.");
       return;
     }
+    if (form.cpf.length !== 11) {
+      setErro("Informe um CPF com 11 números.");
+      return;
+    }
 
     setErro("");
-    onRegister(form);
+    setSaving(true);
+    try {
+      await onRegister(form);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const fields = [
     ["nome", "Nome", "Digite seu nome"],
-    ["email", "Email", "Digite seu email"],
+    ["email", "E-mail", "Digite seu e-mail"],
     ["senha", "Senha", "Digite sua senha"],
     ["cpf", "CPF", "Digite seu CPF"],
     ["escola", "Escola", "Digite sua escola"],
@@ -62,7 +80,7 @@ export default function CadastroUserScreen({
           <Text style={styles.brandTitle}>Crie seu acesso ao sistema</Text>
         </View>
         <View style={styles.form}>
-          <Text style={styles.title}>Cadastro de Usuário</Text>
+          <Text style={styles.title}>Cadastro de usuário</Text>
           {fields.map(([field, label, placeholder]) => (
             <View key={field}>
               <Text style={styles.label}>{label}</Text>
@@ -72,7 +90,7 @@ export default function CadastroUserScreen({
                 onChangeText={(value) =>
                   updateField(
                     field,
-                    field === "cpf" ? value.replace(/\D/g, "") : value,
+                    field === "cpf" ? value.replace(/\D/g, "").slice(0, 11) : value,
                   )
                 }
                 placeholder={placeholder}
@@ -84,19 +102,45 @@ export default function CadastroUserScreen({
                       ? "email-address"
                       : "default"
                 }
-                autoCapitalize={field === "email" ? "none" : "sentences"}
+                autoCapitalize={
+                  field === "email" || field === "senha" ? "none" : "sentences"
+                }
+                autoComplete={
+                  field === "senha"
+                    ? "new-password"
+                    : field === "email"
+                      ? "email"
+                      : "off"
+                }
                 secureTextEntry={field === "senha"}
                 maxLength={field === "cpf" ? 11 : undefined}
+                accessibilityLabel={label}
               />
             </View>
           ))}
-          {erro || externalError ? (
-            <Text style={styles.error}>{erro || externalError}</Text>
+          {erro || (!hideExternalError && externalError) ? (
+            <Text style={styles.error}>
+              {erro || (!hideExternalError && externalError)}
+            </Text>
           ) : null}
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>CADASTRAR USUÁRIO</Text>
+          <TouchableOpacity
+            style={[styles.button, saving && styles.disabledButton]}
+            onPress={handleRegister}
+            disabled={saving}
+            accessibilityRole="button"
+          >
+            {saving ? (
+              <ActivityIndicator color={colors.onPrimary} />
+            ) : (
+              <Text style={styles.buttonText}>CADASTRAR USUÁRIO</Text>
+            )}
           </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton} onPress={onBack}>
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={onBack}
+            disabled={saving}
+            accessibilityRole="button"
+          >
             <Text style={styles.secondaryButtonText}>
               Já possui cadastro? Entrar
             </Text>
@@ -108,7 +152,7 @@ export default function CadastroUserScreen({
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, backgroundColor: colors.background },
+  container: { flex: 1, paddingHorizontal: 20, backgroundColor: colors.background },
   content: { flexGrow: 1, justifyContent: "center", paddingVertical: 24 },
   brand: { marginBottom: 22 },
   logo: {
@@ -119,13 +163,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   brandTitle: { color: colors.text, fontSize: 18, fontWeight: "600" },
-  form: { backgroundColor: colors.surface, borderRadius: 12, padding: 20 },
-  title: { ...typography.h2, marginBottom: 6 },
-  subtitle: {
-    ...typography.body,
-    color: colors.textSecondary,
-    marginBottom: 20,
+  form: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
+  title: { ...typography.h2, color: colors.text, marginBottom: 18 },
   label: { ...typography.button, color: colors.text, marginBottom: 6 },
   input: {
     borderColor: colors.border,
@@ -133,20 +178,24 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     color: colors.text,
     fontSize: 16,
+    minHeight: 50,
     marginBottom: 14,
     paddingHorizontal: 14,
     paddingVertical: 12,
   },
-  error: { color: colors.error, marginBottom: 12 },
+  error: { color: colors.error, fontSize: 14, lineHeight: 20, marginBottom: 12 },
   button: {
     backgroundColor: colors.primary,
     borderRadius: 8,
+    minHeight: 50,
     alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 13,
     marginTop: 4,
-    marginBottom: 14,
+    marginBottom: 10,
   },
+  disabledButton: { opacity: 0.6 },
   buttonText: { ...typography.button, color: colors.onPrimary },
-  secondaryButton: { alignItems: "center" },
+  secondaryButton: { alignItems: "center", justifyContent: "center", minHeight: 48 },
   secondaryButtonText: { ...typography.button, color: colors.primary },
 });

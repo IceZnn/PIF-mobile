@@ -1,91 +1,54 @@
-# PIF-mobile
+# Aplicativo mobile SESI
 
-Aplicativo mobile do sistema de controle de desperdício alimentar, desenvolvido com React Native e Expo. O app permite cadastrar usuários e autenticar com CPF e senha por meio da API do projeto web.
+Aplicativo de controle de desperdício alimentar feito com React Native e Expo. O projeto usa Expo SDK 54 e foi preparado para execução no Expo Go em Android e iOS.
 
-## Funcionalidades atuais
+## Funcionalidades
 
-- Tela inicial de abertura.
-- Cadastro de usuário.
-- Login com CPF e senha.
-- Tela de confirmação após o login.
+- Login e cadastro de usuário por CPF.
+- Token persistido no armazenamento seguro do dispositivo e enviado como Bearer token às rotas autenticadas.
+- Dashboard com dados reais de registros que possuem peso informado.
+- Cadastro de refeição, registro manual do peso, detalhes, listagem e exclusão com confirmação.
+- Registros sem peso aparecem como **Sem peso registrado** e não entram nos indicadores de desperdício.
 
-> A tela inicial após o login ainda não apresenta registros ou indicadores de desperdício. O token recebido no login também não é persistido nem usado em requisições autenticadas pelo app.
-
-## Tecnologias
-
-- React Native 0.81
-- Expo SDK 54
-- React 19
-
-## Requisitos
+## Requisitos e instalação
 
 - Node.js e npm.
-- Expo Go em um celular ou um emulador Android/iOS.
-- API do projeto web em execução.
-
-## Instalação
-
-Clone o repositório e instale as dependências:
+- Expo Go compatível com SDK 54 ou emulador Android/iOS.
+- API do backend em execução e acessível pelo dispositivo.
 
 ```bash
-git clone https://github.com/IceZnn/PIF-mobile.git
-cd PIF-mobile
 npm install
+npx expo start --lan
 ```
 
-Inicie o Expo:
+Leia o QR code no Expo Go. Não é necessário gerar um development build para as funções deste aplicativo.
 
-```bash
-npx expo start
+## Endereço da API
+
+O endereço é centralizado em `src/config/api.js`. Por padrão, o app usa `http://10.0.2.2:8080` no emulador Android e `http://127.0.0.1:8080` no simulador iOS.
+
+No Expo Go em um celular físico, `localhost` aponta para o próprio celular. Configure o IP local do computador que executa o backend antes de iniciar o Expo:
+
+```powershell
+$env:EXPO_PUBLIC_API_URL = "http://192.168.0.10:8080"
+npx expo start --lan
 ```
 
-Use o QR code com o Expo Go ou abra o projeto em um emulador. Também estão disponíveis:
+Substitua o IP e a porta pelos valores do seu ambiente. O celular e o computador precisam estar na mesma rede, e o firewall deve permitir a conexão.
 
-```bash
-npm run android
-npm run ios
-npm run web
-```
+## Rotas utilizadas
 
-## Configuração da API
-
-O endereço da API está definido diretamente em `App.js`:
-
-```js
-const API_URL =
-  Platform.OS === "android"
-    ? "http://10.0.2.2:8080"
-    : "http://127.0.0.1:8080";
-```
-
-O app usa estas rotas:
-
-| Método | Endpoint | Função |
+| Método | Endpoint | Uso |
 |---|---|---|
-| `POST` | `/api/login` | Envia CPF e senha para autenticação. |
-| `POST` | `/api/cadastro_usuario` | Envia os dados do novo usuário. |
+| `POST` | `/api/login` | Autentica CPF e senha e retorna o token. |
+| `POST` | `/api/cadastro_usuario` | Cadastra usuário. |
+| `GET` | `/api/desperdicios` | Lista os registros do usuário autenticado. |
+| `GET` | `/api/desperdicios/{id}` | Consulta os detalhes de um registro próprio. |
+| `POST` | `/api/desperdicios` | Cria refeição e meta. |
+| `POST` | `/api/desperdicios/peso` | Registra o peso real manualmente. |
+| `DELETE` | `/api/desperdicios/{id}` | Exclui um registro próprio. |
+| `POST` | `/api/logout` | Invalida o token. |
 
-O endereço precisa corresponder ao ambiente em que o backend está rodando. No emulador Android, `10.0.2.2` aponta para o computador hospedeiro. Em um celular físico, substitua `127.0.0.1` pelo endereço IP local do computador e verifique se os dois dispositivos estão na mesma rede.
+As chamadas autenticadas enviam `Authorization: Bearer <token>`. O backend precisa conter as rotas JSON de listagem, detalhes e exclusão do aplicativo, além das rotas de login, criação, peso e logout já existentes.
 
-## Estrutura principal
-
-```text
-App.js
-src/
-  screens/
-    cadastro_user.js
-    home.js
-    login.js
-    splash.js
-  routers/
-  components/
-  theme/
-```
-
-As telas e o fluxo entre login, cadastro e tela inicial são coordenados em `App.js`. Os estilos compartilhados ficam em `src/theme`.
-
-## Observações
-
-- A porta configurada no app é `8080`. Ajuste `API_URL` se o backend estiver em outra porta.
-- O login retorna um token, mas o app ainda não o armazena nem o envia em chamadas posteriores.
-- O botão “Sair” retorna à tela de login; ele não chama a rota de logout do backend.
+O aplicativo não se conecta a balanças, Arduino, ESP32, Bluetooth, MQTT ou sensores.
