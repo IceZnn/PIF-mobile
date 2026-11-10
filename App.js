@@ -1,85 +1,120 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Platform, SafeAreaView, StyleSheet } from "react-native";
-import SplashScreen from "./src/screens/splash";
-import LoginScreen from "./src/screens/login";
+import { SafeAreaView, StyleSheet } from "react-native";
 import CadastroUserScreen from "./src/screens/cadastro_user";
 import HomeScreen from "./src/screens/home";
+import LoginScreen from "./src/screens/login";
+import SplashScreen from "./src/screens/splash";
+import { api, ApiError, SessionExpiredError } from "./src/services/api";
+import {
+  clearSessionToken,
+  getSessionToken,
+  saveSessionToken,
+} from "./src/services/session";
 import colors from "./src/theme/colors";
-
-const API_URL =
-  Platform.OS === "android"
-    ? "http://10.0.2.2:8080"
-    : "http://127.0.0.1:8080";
 
 export default function App() {
   const [screen, setScreen] = useState("splash");
+  const [token, setToken] = useState(null);
   const [loginError, setLoginError] = useState("");
+  const [loginNotice, setLoginNotice] = useState("");
   const [registerError, setRegisterError] = useState("");
 
-  const handleLogin = async ({ cpf, senha }) => {
-    try {
-      const response = await fetch(`${API_URL}/api/login`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ cpf, senha }),
+  useEffect(() => {
+    let active = true;
+
+    getSessionToken()
+      .then((savedToken) => {
+        if (!active) {
+          return;
+        }
+        setToken(savedToken);
+        setScreen(savedToken ? "home" : "login");
+      })
+      .catch(() => {
+        if (!active) {
+          return;
+        }
+        setLoginError(
+          "Não foi possível acessar a sessão salva. Tente entrar novamente.",
+        );
+        setScreen("login");
       });
-      const data = await response.json();
 
-      if (response.status === 419) {
-        setLoginError("A sessão do login expirou (erro 419). Ajuste a rota da API.");
-        return;
-      }
+    return () => {
+      active = false;
+    };
+  }, []);
 
-      if (!response.ok) {
-        setLoginError(data.mensagem || "Erro ao realizar login.");
-        return;
-      }
-
-      if (data.erro !== "n") {
-        setLoginError(data.mensagem || "CPF ou senha inválidos.");
-        return;
-      }
-
-      console.log("Token recebido:", data.token);
-      setLoginError("");
+  const handleLogin = async ({ cpf, senha }) => {
+    setLoginError("");
+    setLoginNotice("");
+    try {
+      const data = await api.login({ cpf, senha });
+      await saveSessionToken(data.token);
+      setToken(data.token);
       setScreen("home");
     } catch (error) {
-      console.error("Erro ao fazer login:", error);
-      setLoginError("Não foi possível conectar ao servidor.");
+      setLoginError(
+        error instanceof ApiError
+          ? error.message
+          : "Não foi possível salvar a sessão com segurança. Tente novamente.",
+      );
     }
   };
 
   const handleRegister = async (form) => {
+    setRegisterError("");
     try {
-      const response = await fetch(`${API_URL}/api/cadastro_usuario`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-      const data = await response.json();
-
-      if (!response.ok || data.erro === "s") {
-        const validationErrors = data.errors
-          ? Object.values(data.errors).flat().join("\n")
-          : "Não foi possível realizar o cadastro.";
-        setRegisterError(data.mensagem || validationErrors);
-        return;
-      }
-
-      setRegisterError("");
+      await api.register(form);
+      setLoginNotice("Cadastro realizado. Entre com seu CPF e sua senha.");
       setScreen("login");
     } catch (error) {
-      console.error("Erro ao cadastrar usuário:", error);
-      setRegisterError("Não foi possível conectar ao servidor.");
+      setRegisterError(
+        error instanceof ApiError
+          ? error.message
+          : "Não foi possível concluir o cadastro. Tente novamente.",
+      );
     }
   };
+
+  const handleSessionExpired = useCallback(async () => {
+    let message = "Sua sessão expirou. Entre novamente.";
+    try {
+      await clearSessionToken();
+    } catch {
+      message += " Não foi possível remover a sessão salva do dispositivo.";
+    }
+    setToken(null);
+    setLoginError(message);
+    setLoginNotice("");
+    setScreen("login");
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    let notice = "Sessão encerrada.";
+    try {
+      await api.logout(token);
+    } catch (error) {
+      if (!(error instanceof SessionExpiredError)) {
+        notice =
+          "A sessão foi encerrada neste dispositivo, mas não foi possível avisar o servidor. Verifique a rede.";
+      }
+    }
+
+    let error = "";
+    try {
+      await clearSessionToken();
+    } catch {
+      error =
+        "Não foi possível apagar a sessão salva com segurança. Reinicie o aplicativo ou tente sair novamente.";
+    }
+
+    setToken(null);
+    setLoginError(error);
+    setLoginNotice(error ? "" : notice);
+    setScreen("login");
+  }, [token]);
 
   const renderScreen = () => {
     if (screen === "splash") {
@@ -90,8 +125,13 @@ export default function App() {
       return (
         <LoginScreen
           onLogin={handleLogin}
-          onSignup={() => setScreen("cadastro")}
+          onSignup={() => {
+            setLoginError("");
+            setRegisterError("");
+            setScreen("cadastro");
+          }}
           externalError={loginError}
+          notice={loginNotice}
         />
       );
     }
@@ -106,30 +146,34 @@ export default function App() {
       );
     }
 
-    if (screen === "home") {
-      return <HomeScreen onLogout={() => setScreen("login")} />;
+    if (screen === "home" && token) {
+      return (
+        <HomeScreen
+          token={token}
+          onLogout={handleLogout}
+          onSessionExpired={handleSessionExpired}
+        />
+      );
     }
 
-    return (
-      <LoginScreen
-        onLogin={handleLogin}
-        onSignup={() => setScreen("cadastro")}
-        externalError={loginError}
-      />
-    );
+    return <LoginScreen onLogin={handleLogin} onSignup={() => setScreen("cadastro")} />;
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
+    <SafeAreaView
+      style={[
+        styles.container,
+        screen === "splash" ? styles.splashBackground : styles.screenBackground,
+      ]}
+    >
+      <StatusBar style={screen === "splash" ? "light" : "dark"} />
       {renderScreen()}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.text,
-  },
+  container: { flex: 1 },
+  splashBackground: { backgroundColor: colors.primary },
+  screenBackground: { backgroundColor: colors.background },
 });
