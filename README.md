@@ -25,12 +25,12 @@ Leia o QR code no Expo Go. Não é necessário gerar um development build para a
 
 ## Endereço da API
 
-O endereço é centralizado em `src/config/api.js`. Por padrão, o app usa `http://10.0.2.2:8080` no emulador Android e `http://127.0.0.1:8080` no simulador iOS.
+O endereço é centralizado em `src/config/api.js`. Por padrão, o app usa `http://10.0.2.2:8001` no emulador Android e `http://127.0.0.1:8001` no simulador iOS.
 
 No Expo Go em um celular físico, `localhost` aponta para o próprio celular. Configure o IP local do computador que executa o backend antes de iniciar o Expo:
 
 ```powershell
-$env:EXPO_PUBLIC_API_URL = "http://192.168.0.10:8080"
+$env:EXPO_PUBLIC_API_URL = "http://192.168.0.10:8001"
 npx expo start --lan
 ```
 

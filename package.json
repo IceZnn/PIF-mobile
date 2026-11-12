@@ -8,6 +8,9 @@
     "ios": "expo start --ios",
     "web": "expo start --web"
   },
+  "devDependencies": {
+    "babel-preset-expo": "~54.0.12"
+  },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
     "expo": "~54.0.35",
